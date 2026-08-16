@@ -1,58 +1,55 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 import { Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { ButtonGroup } from "./ui/button-group";
-import { Field } from "./ui/field";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
 
 export function HeaderSearch() {
   const router = useRouter();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [query, setQuery] = useState("");
 
-  const handleOpenSearch = () => {
-    if (isSearchOpen && searchQuery.trim() !== "") {
-      router.push(`/busca/${encodeURIComponent(searchQuery)}`);
+  const submit = () => {
+    if (query.trim() !== "") {
+      router.push(`/busca/${encodeURIComponent(query.trim())}`);
+    }
+  };
+
+  const handleToggle = () => {
+    if (isSearchOpen && query.trim() !== "") {
+      submit();
       return;
     }
-    setIsSearchOpen(!isSearchOpen);
+    setIsSearchOpen((open) => !open);
   };
 
   return (
     <div className="flex items-center gap-2">
-      <Field>
-        <ButtonGroup>
-          {isSearchOpen && (
-            <Input
-              id="input-button-group"
-              placeholder="Digite sua pesquisa..."
-              className="border border-white/5 bg-[#2a2a2a] placeholder:text-white/70 text-white/70"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={(e) => {
-                if (
-                  e.key === "Enter" &&
-                  searchQuery.trim() !== "" &&
-                  isSearchOpen
-                ) {
-                  router.push(`/busca/${encodeURIComponent(searchQuery)}`);
-                }
-              }}
-            />
-          )}
-          <Button
-            variant="outline"
-            size="icon"
-            className="border border-white/5 bg-[#131313]/20 text-[#ffd89c]/80 hover:text-[#ffd89c] hover:bg-[#131313]/20 cursor-pointer"
-            onClick={handleOpenSearch}
-          >
-            <Search />
-          </Button>
-        </ButtonGroup>
-      </Field>
+      <Input
+        type="search"
+        placeholder="Buscar filme"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") submit();
+        }}
+        className={cn(
+          "min-w-0 flex-none rounded-lg bg-brand-surface text-sm text-brand-text caret-brand-accent outline-none transition-all duration-200 ease-in-out hover:border-brand-text/45 focus-visible:border-brand-accent",
+          isSearchOpen
+            ? "visible w-[15vw] border border-brand-divider px-2 py-1 opacity-100"
+            : "invisible w-0 border-0 py-1 opacity-0",
+        )}
+      />
+      <Button
+        className="cursor-pointer flex-none rounded-lg border border-brand-divider bg-brand-surface p-2 text-brand-text hover:bg-brand-surface/80"
+        aria-label="Buscar"
+        onClick={handleToggle}
+      >
+        <Search />
+      </Button>
     </div>
   );
 }
