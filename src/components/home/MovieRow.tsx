@@ -2,9 +2,7 @@
 
 import { btnClass } from "@/lib/button-styles";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { Button } from "../ui/button";
 import {
   Carousel,
@@ -12,14 +10,9 @@ import {
   CarouselContent,
   CarouselItem,
 } from "../ui/carousel";
+import PosterCard, { type MovieCard } from "./PosterCard";
 
-export type MovieCard = {
-  id: number;
-  title: string;
-  year: string;
-  genres: string;
-  poster: string | null;
-};
+export type { MovieCard };
 
 export default function MovieRow({
   id,
@@ -74,31 +67,7 @@ export default function MovieRow({
               key={film.id}
               className="pl-0 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/9"
             >
-              <Link
-                href={`/movie/${film.id}`}
-                className="group flex flex-none flex-col gap-2 text-brand-text no-underline"
-              >
-                <div className="relative h-[30vh] w-[9vw] overflow-hidden rounded-lg bg-brand-surface shadow-sm transition-shadow duration-150 ease-in-out group-hover:shadow-md">
-                  {film.poster && (
-                    <Image
-                      src={film.poster}
-                      alt={film.title}
-                      fill
-                      sizes="196px"
-                      className="object-cover"
-                    />
-                  )}
-                </div>
-                <div>
-                  <div className="font-heading text-sm font-medium leading-tight">
-                    {film.title}
-                  </div>
-                  <div className="mt-1 text-xs text-brand-text/50">
-                    {film.year}
-                    {film.genres ? ` · ${film.genres}` : ""}
-                  </div>
-                </div>
-              </Link>
+              <PosterCard movie={film} />
             </CarouselItem>
           ))}
         </CarouselContent>
