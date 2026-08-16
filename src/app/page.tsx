@@ -1,4 +1,4 @@
-import { backdropUrl, getTrending, getUpcoming, posterUrl, type Movie } from "@/lib/movies";
+import { backdropUrl, getTrendingMovies, getUpcomingMovies, posterUrl, type Movie } from "@/lib/tmdb";
 import HeroCarousel, { type HeroSlide } from "@/components/home/HeroCarousel";
 import MovieRow, { type MovieCard } from "@/components/home/MovieRow";
 
@@ -23,9 +23,8 @@ function toCard(movie: Movie): MovieCard {
   };
 }
 
-export default function Home() {
-  const trending = getTrending();
-  const upcoming = getUpcoming();
+export default async function Home() {
+  const [trending, upcoming] = await Promise.all([getTrendingMovies(), getUpcomingMovies()]);
 
   const heroSlides: HeroSlide[] = trending.slice(0, 10).map((movie) => ({
     id: movie.id,
