@@ -2,8 +2,18 @@ import "server-only";
 import { cache } from "react";
 import { tmdbFetch, TmdbApiError } from "./fetcher";
 import { TMDB_LANGUAGE, TMDB_REGION, TMDB_REVALIDATE } from "./constants";
-import { toMovie, toMovieDetails, toMovieVideo, type Movie, type MovieDetails, type MovieVideo } from "./dto";
+import {
+  toCredits,
+  toMovie,
+  toMovieDetails,
+  toMovieVideo,
+  type Credits,
+  type Movie,
+  type MovieDetails,
+  type MovieVideo,
+} from "./dto";
 import type {
+  TmdbCreditsResponse,
   TmdbGenreListResponse,
   TmdbMovieDetailsRaw,
   TmdbMovieSummary,
@@ -67,6 +77,27 @@ export const getMovieVideos = cache(async (id: number): Promise<MovieVideo[]> =>
     tags: ["tmdb", `tmdb:movie:${id}`],
   });
   return data.results.map(toMovieVideo);
+});
+
+export const getMovieCredits = cache(async (id: number): Promise<Credits> => {
+  const data = await tmdbFetch<TmdbCreditsResponse>(`/movie/${id}/credits`, {
+    searchParams: { language: TMDB_LANGUAGE },
+    revalidate: TMDB_REVALIDATE.details,
+    tags: ["tmdb", `tmdb:movie:${id}`],
+  });
+  return toCredits(data);
+});
+
+export const getSimilarMovies = cache(async (id: number): Promise<Movie[]> => {
+  const [data, genreMap] = await Promise.all([
+    tmdbFetch<TmdbPaginatedResponse<TmdbMovieSummary>>(`/movie/${id}/similar`, {
+      searchParams: { language: TMDB_LANGUAGE },
+      revalidate: TMDB_REVALIDATE.details,
+      tags: ["tmdb", `tmdb:movie:${id}`],
+    }),
+    getGenreMap(),
+  ]);
+  return data.results.map((result) => toMovie(result, genreMap));
 });
 
 export const searchMovies = cache(async (query: string, page = 1): Promise<Movie[]> => {
