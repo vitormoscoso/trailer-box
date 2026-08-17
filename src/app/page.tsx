@@ -1,4 +1,11 @@
-import { backdropUrl, getTrendingMovies, getUpcomingMovies, posterUrl, type Movie } from "@/lib/tmdb";
+import {
+  backdropUrl,
+  getNowPlayingMovies,
+  getTrendingMovies,
+  getUpcomingMovies,
+  posterUrl,
+  type Movie,
+} from "@/lib/tmdb";
 import HeroCarousel, { type HeroSlide } from "@/components/home/HeroCarousel";
 import MovieRow, { type MovieCard } from "@/components/home/MovieRow";
 
@@ -24,7 +31,11 @@ function toCard(movie: Movie): MovieCard {
 }
 
 export default async function Home() {
-  const [trending, upcoming] = await Promise.all([getTrendingMovies(), getUpcomingMovies()]);
+  const [trending, upcoming, nowPlaying] = await Promise.all([
+    getTrendingMovies(),
+    getUpcomingMovies(),
+    getNowPlayingMovies(),
+  ]);
 
   const heroSlides: HeroSlide[] = trending.slice(0, 10).map((movie) => ({
     id: movie.id,
@@ -37,16 +48,16 @@ export default async function Home() {
 
   const rows = [
     {
+      id: "em-cartaz",
+      title: "Em cartaz",
+      note: "nos cinemas agora",
+      items: nowPlaying.map(toCard),
+    },
+    {
       id: "lancamentos",
       title: "Lançamentos",
       note: "em breve nos cinemas",
       items: upcoming.map(toCard),
-    },
-    {
-      id: "alta",
-      title: "Em alta hoje",
-      note: "mais assistidos nas últimas 24 horas",
-      items: trending.map(toCard),
     },
   ];
 
