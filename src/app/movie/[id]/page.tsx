@@ -77,7 +77,7 @@ export default async function MoviePage({ params }: PageProps<"/movie/[id]">) {
               fill
               priority
               sizes="100vw"
-              className="object-cover"
+              className="object-cover object-[center_10%]"
             />
           )}
         </div>
