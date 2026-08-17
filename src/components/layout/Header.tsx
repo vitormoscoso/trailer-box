@@ -4,7 +4,7 @@ import { HeaderSearch } from "../HeaderSearch";
 const NAV_LINKS = [
   { href: "/", label: "Início" },
   { href: "/#lancamentos", label: "Lançamentos" },
-  { href: "/#alta", label: "Em alta" },
+  { href: "/#em-cartaz", label: "Em cartaz" },
   // { href: "/#generos", label: "Gêneros" },
 ];
 
