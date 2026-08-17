@@ -19,15 +19,22 @@ export default function MovieRow({
   title,
   note,
   items,
+  size = "default",
 }: {
   id: string;
   title: string;
   note: string;
   items: MovieCard[];
+  size?: "default" | "compact";
 }) {
   const [api, setApi] = useState<CarouselApi>();
 
   if (items.length === 0) return null;
+
+  const itemBasis =
+    size === "compact"
+      ? "basis-1/3 sm:basis-1/4 md:basis-1/6 lg:basis-1/8 xl:basis-1/10"
+      : "basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/9";
 
   return (
     <section id={id} className="pt-20">
@@ -63,10 +70,7 @@ export default function MovieRow({
       >
         <CarouselContent className="ml-2">
           {items.map((film) => (
-            <CarouselItem
-              key={film.id}
-              className="pl-0 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/9"
-            >
+            <CarouselItem key={film.id} className={`pl-0 ${itemBasis}`}>
               <PosterCard movie={film} />
             </CarouselItem>
           ))}
