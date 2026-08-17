@@ -3,6 +3,7 @@ export {
   getMovieCredits,
   getMovieDetails,
   getMovieVideos,
+  getNowPlayingMovies,
   getSimilarMovies,
   getTrendingMovies,
   getUpcomingMovies,

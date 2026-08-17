@@ -43,6 +43,17 @@ export const getTrendingMovies = cache(async (window: "day" | "week" = "week"): 
   return data.results.map((result) => toMovie(result, genreMap));
 });
 
+/**
+ * TMDB's `/movie/upcoming` and `/discover/movie` (with a `region`) filter by the
+ * regional release date, but the `release_date` field they return is the movie's
+ * original/primary release date. Theatrical rereleases (anniversary screenings,
+ * classics back in theaters) pass the regional filter but carry a decades-old
+ * `release_date`, so they need to be filtered out client-side by year.
+ */
+function isCurrentYear(movie: Movie): boolean {
+  return movie.year === String(new Date().getFullYear());
+}
+
 export const getUpcomingMovies = cache(async (): Promise<Movie[]> => {
   const [data, genreMap] = await Promise.all([
     tmdbFetch<TmdbPaginatedResponse<TmdbMovieSummary>>("/movie/upcoming", {
@@ -52,7 +63,39 @@ export const getUpcomingMovies = cache(async (): Promise<Movie[]> => {
     }),
     getGenreMap(),
   ]);
-  return data.results.map((result) => toMovie(result, genreMap));
+  return data.results.map((result) => toMovie(result, genreMap)).filter(isCurrentYear);
+});
+
+function isoDate(date: Date): string {
+  return date.toISOString().slice(0, 10);
+}
+
+function addDays(date: Date, days: number): Date {
+  const result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return result;
+}
+
+/** Currently in theaters (Brazil release window), most popular first. */
+export const getNowPlayingMovies = cache(async (): Promise<Movie[]> => {
+  const today = new Date();
+  const [data, genreMap] = await Promise.all([
+    tmdbFetch<TmdbPaginatedResponse<TmdbMovieSummary>>("/discover/movie", {
+      searchParams: {
+        language: TMDB_LANGUAGE,
+        region: TMDB_REGION,
+        with_release_type: "2|3",
+        "release_date.gte": isoDate(addDays(today, -45)),
+        "release_date.lte": isoDate(today),
+        "vote_count.gte": 10,
+        sort_by: "popularity.desc",
+      },
+      revalidate: TMDB_REVALIDATE.nowPlaying,
+      tags: ["tmdb", "tmdb:now-playing"],
+    }),
+    getGenreMap(),
+  ]);
+  return data.results.map((result) => toMovie(result, genreMap)).filter(isCurrentYear);
 });
 
 /** Returns `null` for an unknown/removed movie id instead of throwing, so pages can call `notFound()`. */

@@ -8,6 +8,7 @@ export const TMDB_REGION = "BR";
 export const TMDB_REVALIDATE = {
   trending: 60 * 60, // 1 hour
   upcoming: 60 * 60 * 6, // 6 hours
+  nowPlaying: 60 * 60 * 6, // 6 hours
   details: 60 * 60 * 24, // 24 hours
   genres: 60 * 60 * 24 * 7, // 7 days
   search: 60 * 5, // 5 minutes
