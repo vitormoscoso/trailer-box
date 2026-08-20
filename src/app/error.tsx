@@ -11,7 +11,6 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-brand-bg px-6 text-center font-body text-brand-text">
       <h1 className="font-heading text-2xl font-medium">Algo deu errado ao carregar os dados</h1>
-      <p className="max-w-md text-sm text-brand-text/60">{error.message}</p>
       <button className={btnClass("secondary")} onClick={reset}>
         Tentar novamente
       </button>
