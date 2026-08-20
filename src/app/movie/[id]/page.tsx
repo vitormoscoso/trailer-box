@@ -1,6 +1,9 @@
 import MovieRow, { type MovieCard } from "@/components/home/MovieRow";
 import MovieInfoCard from "@/components/movie/MovieInfoCard";
 import PersonRow from "@/components/movie/PersonRow";
+import TrailerPlayer, {
+  TRAILER_LANGUAGE_COOKIE,
+} from "@/components/movie/TrailerPlayer";
 import { btnClass } from "@/lib/button-styles";
 import {
   backdropUrl,
@@ -9,15 +12,23 @@ import {
   getMovieDetails,
   getMovieVideos,
   getSimilarMovies,
-  pickTrailer,
+  getTrailerOptions,
   posterUrl,
   profileUrl,
   sortCrewByRelevance,
+  type TrailerLanguage,
 } from "@/lib/tmdb";
 import { ExternalLink } from "lucide-react";
+import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+
+const TRAILER_LANGUAGE_KEYS: TrailerLanguage[] = [
+  "dublado",
+  "original",
+  "ingles",
+];
 
 function formatRuntime(minutes: number) {
   const hours = Math.floor(minutes / 60);
@@ -32,15 +43,24 @@ export default async function MoviePage({ params }: PageProps<"/movie/[id]">) {
   const movieId = Number(id);
   if (!Number.isFinite(movieId)) notFound();
 
-  const [movie, videos, credits, similar] = await Promise.all([
-    getMovieDetails(movieId),
-    getMovieVideos(movieId),
-    getMovieCredits(movieId),
-    getSimilarMovies(movieId),
-  ]);
+  // Details go first: getMovieVideos needs the original language to widen the search.
+  const movie = await getMovieDetails(movieId);
   if (!movie) notFound();
 
-  const trailer = pickTrailer(videos);
+  const [videos, credits, similar, cookieStore] = await Promise.all([
+    getMovieVideos(movieId, movie.originalLanguage),
+    getMovieCredits(movieId),
+    getSimilarMovies(movieId),
+    cookies(),
+  ]);
+
+  const trailerOptions = getTrailerOptions(videos, movie.originalLanguage);
+  const preferredLanguage = cookieStore.get(TRAILER_LANGUAGE_COOKIE)?.value;
+  const initialTrailerKey =
+    trailerOptions.find((option) => option.key === preferredLanguage)?.key ??
+    trailerOptions[0]?.key ??
+    TRAILER_LANGUAGE_KEYS[0];
+
   const backdrop = backdropUrl(movie.backdropPath);
   const poster = posterUrl(movie.posterPath);
   const directors = getDirectors(credits.crew);
@@ -134,16 +154,6 @@ export default async function MoviePage({ params }: PageProps<"/movie/[id]">) {
             </p>
 
             <div className="mt-6 flex flex-wrap items-center gap-3">
-              {trailer && (
-                <Link
-                  href={`https://www.youtube.com/watch?v=${trailer.key}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className={btnClass("primary")}
-                >
-                  Assistir no YouTube
-                </Link>
-              )}
               {movie.homepage && (
                 <Link
                   href={movie.homepage}
@@ -171,17 +181,10 @@ export default async function MoviePage({ params }: PageProps<"/movie/[id]">) {
         </div>
 
         <div className="my-12">
-          {trailer && (
-            <div className="aspect-video w-full overflow-hidden rounded-lg bg-brand-surface lg:col-span-2">
-              <iframe
-                src={`https://www.youtube.com/embed/${trailer.key}`}
-                title={trailer.name}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                className="h-full w-full"
-              />
-            </div>
-          )}
+          <TrailerPlayer
+            options={trailerOptions}
+            initialKey={initialTrailerKey}
+          />
         </div>
         <MovieInfoCard movie={movie} />
       </div>
