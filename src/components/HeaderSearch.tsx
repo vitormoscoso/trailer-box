@@ -1,6 +1,5 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import { Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -28,21 +27,25 @@ export function HeaderSearch() {
 
   return (
     <div className="flex items-center gap-2">
-      <Input
-        type="search"
-        placeholder="Buscar filme"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") submit();
-        }}
-        className={cn(
-          "min-w-0 flex-none rounded-lg bg-brand-surface text-sm text-brand-text caret-brand-accent outline-none transition-all duration-200 ease-in-out hover:border-brand-text/45 focus-visible:border-brand-accent",
-          isSearchOpen
-            ? "visible w-[15vw] border border-brand-divider px-2 py-1 opacity-100"
-            : "invisible w-0 border-0 py-1 opacity-0",
+      <div
+        className={`overflow-hidden transition-all duration-200 ease-in-out ${
+          isSearchOpen ? "w-[15vw] opacity-100" : "w-0 opacity-0"
+        }`}
+      >
+        {isSearchOpen && (
+          <Input
+            autoFocus
+            type="search"
+            placeholder="Buscar filme"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") submit();
+            }}
+            className="w-[15vw] rounded-lg border border-brand-divider bg-brand-surface px-2 py-1 text-sm text-brand-text caret-brand-accent outline-none hover:border-brand-text/45 focus-visible:border-brand-accent"
+          />
         )}
-      />
+      </div>
       <Button
         className="cursor-pointer flex-none rounded-lg border border-brand-divider bg-brand-surface p-2 text-brand-text hover:bg-brand-surface/80"
         aria-label="Buscar"
