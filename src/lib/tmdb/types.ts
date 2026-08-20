@@ -73,6 +73,8 @@ export type TmdbVideoRaw = {
   site: string;
   type: string;
   official: boolean;
+  iso_639_1: string;
+  iso_3166_1: string;
 };
 
 export type TmdbVideosResponse = {

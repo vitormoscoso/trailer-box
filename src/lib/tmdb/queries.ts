@@ -113,9 +113,22 @@ export const getMovieDetails = cache(async (id: number): Promise<MovieDetails | 
   }
 });
 
-export const getMovieVideos = cache(async (id: number): Promise<MovieVideo[]> => {
+/**
+ * Once `include_video_language` is set, TMDB stops implicitly including whatever
+ * `language` was requested — every language we want back (Portuguese, English,
+ * untagged, and the movie's own original language e.g. "ko"/"ru") has to be listed
+ * explicitly, or most movies only ever surface a dubbed trailer, or none at all.
+ *
+ * "pt" and "pt-BR" are NOT interchangeable here: TMDB matches them against disjoint
+ * sets of videos (bare "pt" only catches Portugal-tagged videos, "pt-BR" only
+ * catches Brazil-tagged ones) — both are listed so either regional dub surfaces.
+ */
+export const getMovieVideos = cache(async (id: number, originalLanguage?: string): Promise<MovieVideo[]> => {
+  const languages = Array.from(
+    new Set(["pt-BR", "en-US", "null", ...(originalLanguage ? [originalLanguage] : [])])
+  );
   const data = await tmdbFetch<TmdbVideosResponse>(`/movie/${id}/videos`, {
-    searchParams: { language: TMDB_LANGUAGE },
+    searchParams: { language: TMDB_LANGUAGE, include_video_language: languages.join(",") },
     revalidate: TMDB_REVALIDATE.details,
     tags: ["tmdb", `tmdb:movie:${id}`],
   });

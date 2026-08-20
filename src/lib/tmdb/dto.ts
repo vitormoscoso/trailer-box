@@ -46,6 +46,7 @@ export type MovieVideo = {
   site: string;
   type: string;
   official: boolean;
+  language: string;
 };
 
 export type CastMember = {
@@ -118,6 +119,7 @@ export function toMovieVideo(raw: TmdbVideoRaw): MovieVideo {
     site: raw.site,
     type: raw.type,
     official: raw.official,
+    language: raw.iso_639_1,
   };
 }
 
@@ -166,14 +168,48 @@ export function sortCrewByRelevance(crew: CrewMember[]): CrewMember[] {
   return [...crew].sort((a, b) => crewPriority(a) - crewPriority(b));
 }
 
-/** Picks the best YouTube trailer to feature: official trailer > any trailer > teaser > first video. */
-export function pickTrailer(videos: MovieVideo[]): MovieVideo | null {
-  const youtube = videos.filter((video) => video.site === "YouTube");
+/** Picks the best YouTube video from a single-language pool: official trailer > any trailer > teaser > first video. */
+function pickBest(videos: MovieVideo[]): MovieVideo | null {
   return (
-    youtube.find((video) => video.type === "Trailer" && video.official) ??
-    youtube.find((video) => video.type === "Trailer") ??
-    youtube.find((video) => video.type === "Teaser") ??
-    youtube[0] ??
+    videos.find((video) => video.type === "Trailer" && video.official) ??
+    videos.find((video) => video.type === "Trailer") ??
+    videos.find((video) => video.type === "Teaser") ??
+    videos[0] ??
     null
   );
+}
+
+export type TrailerLanguage = "dublado" | "original" | "ingles";
+
+export type TrailerOption = {
+  key: TrailerLanguage;
+  label: string;
+  video: MovieVideo;
+};
+
+/**
+ * Groups YouTube videos into up to three language options — dubbed Portuguese,
+ * the movie's original language, and English — each showing only if TMDB actually
+ * has a trailer for it. "Original" and "Inglês" collapse into one tab when the
+ * movie's original language already is English.
+ */
+export function getTrailerOptions(videos: MovieVideo[], originalLanguage: string): TrailerOption[] {
+  const youtube = videos.filter((video) => video.site === "YouTube");
+  const buckets: { key: TrailerLanguage; label: string; language: string }[] = [
+    { key: "dublado", label: "Português", language: "pt" },
+    { key: "original", label: "Original", language: originalLanguage },
+    { key: "ingles", label: "Inglês", language: "en" },
+  ];
+
+  const seenLanguages = new Set<string>();
+  const options: TrailerOption[] = [];
+  for (const bucket of buckets) {
+    if (seenLanguages.has(bucket.language)) continue;
+    const best = pickBest(youtube.filter((video) => video.language === bucket.language));
+    if (best) {
+      options.push({ key: bucket.key, label: bucket.label, video: best });
+      seenLanguages.add(bucket.language);
+    }
+  }
+  return options;
 }
