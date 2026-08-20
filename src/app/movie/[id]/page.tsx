@@ -23,6 +23,7 @@ import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import PosterImage from "@/components/PosterImage";
 
 const TRAILER_LANGUAGE_KEYS: TrailerLanguage[] = [
   "dublado",
@@ -107,15 +108,7 @@ export default async function MoviePage({ params }: PageProps<"/movie/[id]">) {
       <div className="mx-auto max-w-5xl px-6 pb-12">
         <div className="-mt-32 flex flex-col gap-8 sm:flex-row">
           <div className="relative aspect-2/3 w-40 flex-none overflow-hidden rounded-lg bg-brand-surface shadow-md sm:w-56">
-            {poster && (
-              <Image
-                src={poster}
-                alt={movie.title}
-                fill
-                sizes="224px"
-                className="object-cover"
-              />
-            )}
+            <PosterImage src={poster} alt={movie.title} sizes="224px" iconSize={40} />
           </div>
 
           <div className="relative flex-1 pt-4">

@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import { UserRound } from "lucide-react";
+import { useState } from "react";
 
 export type PersonCardMember = {
   id: number;
@@ -9,11 +12,21 @@ export type PersonCardMember = {
 };
 
 export default function PersonCard({ member }: { member: PersonCardMember }) {
+  const [failed, setFailed] = useState(false);
+  const showImage = member.profile && !failed;
+
   return (
     <div className="flex flex-none flex-col items-center gap-2 text-center">
       <div className="relative h-16 w-16 flex-none overflow-hidden rounded-full bg-brand-surface">
-        {member.profile ? (
-          <Image src={member.profile} alt={member.name} fill sizes="64px" className="object-cover" />
+        {showImage ? (
+          <Image
+            src={member.profile as string}
+            alt={member.name}
+            fill
+            sizes="64px"
+            className="object-cover"
+            onError={() => setFailed(true)}
+          />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-brand-text/30">
             <UserRound size={20} />

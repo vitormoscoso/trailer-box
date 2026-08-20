@@ -1,5 +1,5 @@
-import Image from "next/image";
 import Link from "next/link";
+import PosterImage from "@/components/PosterImage";
 
 export type MovieCard = {
   id: number;
@@ -13,15 +13,7 @@ export default function PosterCard({ movie }: { movie: MovieCard }) {
   return (
     <Link href={`/movie/${movie.id}`} className="group flex flex-none flex-col gap-2 text-brand-text no-underline">
       <div className="relative aspect-2/3 w-full overflow-hidden rounded-lg bg-brand-surface shadow-sm transition-shadow duration-150 ease-in-out group-hover:shadow-md">
-        {movie.poster && (
-          <Image
-            src={movie.poster}
-            alt={movie.title}
-            fill
-            sizes="(min-width: 1024px) 200px, 33vw"
-            className="object-cover"
-          />
-        )}
+        <PosterImage src={movie.poster} alt={movie.title} sizes="(min-width: 1024px) 200px, 33vw" />
       </div>
       <div>
         <div className="font-heading text-sm font-medium leading-tight">{movie.title}</div>
