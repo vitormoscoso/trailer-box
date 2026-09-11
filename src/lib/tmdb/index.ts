@@ -8,6 +8,7 @@ export {
   getTrendingMovies,
   getUpcomingMovies,
   searchMovies,
+  type PaginatedMovies,
 } from "./queries";
 export { backdropUrl, logoUrl, posterUrl, profileUrl } from "./images";
 export { getDirectors, getTrailerOptions, sortCrewByRelevance } from "./dto";

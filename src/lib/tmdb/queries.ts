@@ -156,17 +156,36 @@ export const getSimilarMovies = cache(async (id: number): Promise<Movie[]> => {
   return data.results.map((result) => toMovie(result, genreMap));
 });
 
-export const searchMovies = cache(async (query: string, page = 1): Promise<Movie[]> => {
-  const trimmed = query.trim();
-  if (!trimmed) return [];
+export type PaginatedMovies = {
+  movies: Movie[];
+  page: number;
+  totalPages: number;
+  totalResults: number;
+};
 
-  const [data, genreMap] = await Promise.all([
-    tmdbFetch<TmdbPaginatedResponse<TmdbMovieSummary>>("/search/movie", {
-      searchParams: { query: trimmed, language: TMDB_LANGUAGE, page, include_adult: "false" },
-      revalidate: TMDB_REVALIDATE.search,
-      tags: ["tmdb", "tmdb:search"],
-    }),
-    getGenreMap(),
-  ]);
-  return data.results.map((result) => toMovie(result, genreMap));
+const EMPTY_RESULTS: PaginatedMovies = { movies: [], page: 1, totalPages: 0, totalResults: 0 };
+
+export const searchMovies = cache(async (query: string, page = 1): Promise<PaginatedMovies> => {
+  const trimmed = query.trim();
+  if (!trimmed) return EMPTY_RESULTS;
+
+  try {
+    const [data, genreMap] = await Promise.all([
+      tmdbFetch<TmdbPaginatedResponse<TmdbMovieSummary>>("/search/movie", {
+        searchParams: { query: trimmed, language: TMDB_LANGUAGE, page, include_adult: "false" },
+        revalidate: TMDB_REVALIDATE.search,
+        tags: ["tmdb", "tmdb:search"],
+      }),
+      getGenreMap(),
+    ]);
+    return {
+      movies: data.results.map((result) => toMovie(result, genreMap)),
+      page: data.page,
+      totalPages: data.total_pages,
+      totalResults: data.total_results,
+    };
+  } catch (error) {
+    if (error instanceof TmdbApiError && error.status === 400) return { ...EMPTY_RESULTS, page };
+    throw error;
+  }
 });
