@@ -33,9 +33,19 @@ export default function PersonCard({ member }: { member: PersonCardMember }) {
           </div>
         )}
       </div>
-      <div className="min-w-0">
-        <div className="truncate font-heading text-xs font-medium leading-tight">{member.name}</div>
-        <div className="mt-0.5 truncate text-[11px] text-brand-text/50">{member.role}</div>
+      <div className="w-full min-w-0">
+        <div
+          className="truncate font-heading text-xs font-medium leading-tight"
+          title={member.name}
+        >
+          {member.name}
+        </div>
+        <div
+          className="mt-0.5 truncate text-[11px] text-brand-text/50"
+          title={member.role}
+        >
+          {member.role}
+        </div>
       </div>
     </div>
   );
