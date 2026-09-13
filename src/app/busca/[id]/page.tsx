@@ -25,7 +25,7 @@ export default async function SearchPage({ params, searchParams }: PageProps<"/b
 
   return (
     <div className="-mt-6 min-h-screen bg-brand-bg px-12 pb-20 pt-10 font-body text-brand-text">
-      <h1 className="font-heading text-2xl font-medium">Resultados para &quot;{query}&quot;</h1>
+      <h1 className="font-heading text-xl font-medium md:text-2xl">Resultados para &quot;{query}&quot;</h1>
       <p className="mt-1 text-sm text-brand-text/50">
         {totalResults} {totalResults === 1 ? "filme encontrado" : "filmes encontrados"}
       </p>
