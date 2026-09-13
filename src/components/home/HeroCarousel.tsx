@@ -44,14 +44,16 @@ export default function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
 
   if (slides.length === 0) return null;
 
+  const heroHeight = "h-[min(70vh,70vw)]";
+
   return (
-    <section className="-mt-[73px]">
-      <Carousel setApi={setApi} opts={{ loop: true }} className="h-[70vh]">
-        <CarouselContent className="ml-0 h-[70vh]">
+    <section className="-mt-12 md:-mt-[73px]">
+      <Carousel setApi={setApi} opts={{ loop: true }} className={heroHeight}>
+        <CarouselContent className={cn("ml-0", heroHeight)}>
           {slides.map((slide, i) => (
             <CarouselItem
               key={slide.id}
-              className="relative h-[70vh] basis-full pl-0"
+              className={cn("relative basis-full pl-0", heroHeight)}
               onMouseEnter={() => setPaused(true)}
               onMouseLeave={() => setPaused(false)}
             >
@@ -69,8 +71,8 @@ export default function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
               </div>
               <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,#161826_0%,rgba(22,24,38,0.92)_34%,rgba(22,24,38,0.25)_68%,rgba(22,24,38,0.7)_100%)]" />
               <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_top,#161826_0%,rgba(22,24,38,0)_42%)]" />
-              <div className="absolute bottom-[2em] left-[3em] max-w-[50vw]">
-                <h1 className="mb-2 font-heading text-[3em] font-medium tracking-[-0.02em] [text-wrap:balance]">
+              <div className="absolute bottom-4 left-4 max-w-[85vw] sm:bottom-6 sm:left-6 sm:max-w-[70vw] md:bottom-[2em] md:left-[3em] md:max-w-[50vw]">
+                <h1 className="mb-2 font-heading text-2xl font-medium tracking-[-0.02em] [text-wrap:balance] sm:text-3xl md:text-4xl lg:text-[3em]">
                   {slide.title}
                 </h1>
                 <div className="mb-2 flex flex-wrap items-center gap-2 text-sm text-brand-text/62">
@@ -82,13 +84,21 @@ export default function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
                     </>
                   )}
                 </div>
-                <p className="line-clamp-4 text-md text-brand-text/72 [text-wrap:pretty]">{slide.synopsis}</p>
-                <div className="mt-4 flex gap-4">
-                  <Link className={btnClass("primary")} href={`/movie/${slide.id}`}>
+                <p className="line-clamp-3 text-sm text-brand-text/72 [text-wrap:pretty] sm:line-clamp-3 md:line-clamp-4 md:text-base lg:text-lg">
+                  {slide.synopsis}
+                </p>
+                <div className="mt-3 flex flex-wrap gap-3 sm:mt-4 sm:gap-4">
+                  <Link
+                    className={cn(btnClass("primary"), "text-xs px-3 py-2 sm:px-4 sm:py-2.5 sm:text-sm")}
+                    href={`/movie/${slide.id}`}
+                  >
                     <Play fill="currentColor" size={16} />
                     Assistir trailer
                   </Link>
-                  <Link className={btnClass("secondary")} href={`/movie/${slide.id}`}>
+                  <Link
+                    className={cn(btnClass("secondary"), "text-xs px-3 py-2 sm:px-4 sm:py-2.5 sm:text-sm")}
+                    href={`/movie/${slide.id}`}
+                  >
                     Sobre o filme
                   </Link>
                 </div>
@@ -98,7 +108,7 @@ export default function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
         </CarouselContent>
       </Carousel>
 
-      <div className="absolute left-[3em] flex items-center gap-4">
+      <div className="absolute left-4 flex items-center gap-3 sm:left-6 md:left-[3em] md:gap-4">
         <div className="flex gap-1">
           {slides.map((slide, i) => {
             const on = i === active;
