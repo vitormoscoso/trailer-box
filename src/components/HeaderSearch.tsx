@@ -29,7 +29,7 @@ export function HeaderSearch() {
     <div className="flex items-center gap-2">
       <div
         className={`overflow-hidden transition-all duration-200 ease-in-out ${
-          isSearchOpen ? "w-[15vw] opacity-100" : "w-0 opacity-0"
+          isSearchOpen ? "w-[42vw] opacity-100 sm:w-56 md:w-[15vw]" : "w-0 opacity-0"
         }`}
       >
         {isSearchOpen && (
@@ -42,16 +42,16 @@ export function HeaderSearch() {
             onKeyDown={(e) => {
               if (e.key === "Enter") submit();
             }}
-            className="w-[15vw] rounded-lg border border-brand-divider bg-brand-surface px-2 py-1 text-sm text-brand-text caret-brand-accent outline-none hover:border-brand-text/45 focus-visible:border-brand-accent"
+            className="w-[42vw] rounded-lg border border-brand-divider bg-brand-surface px-2 py-1 text-sm text-brand-text caret-brand-accent outline-none hover:border-brand-text/45 focus-visible:border-brand-accent sm:w-56 md:w-[15vw]"
           />
         )}
       </div>
       <Button
-        className="cursor-pointer flex-none rounded-lg border border-brand-divider bg-brand-surface p-2 text-brand-text hover:bg-brand-surface/80"
+        className="flex h-9 w-9 cursor-pointer flex-none items-center justify-center rounded-lg border border-brand-divider bg-brand-surface p-0 text-brand-text hover:bg-brand-surface/80"
         aria-label="Buscar"
         onClick={handleToggle}
       >
-        <Search />
+        <Search size={18} />
       </Button>
     </div>
   );
