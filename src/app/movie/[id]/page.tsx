@@ -89,7 +89,7 @@ export default async function MoviePage({ params }: PageProps<"/movie/[id]">) {
 
   return (
     <div className="min-h-screen bg-brand-bg font-body text-brand-text">
-      <section className="relative -mt-6 h-[50vh] min-h-[360px]">
+      <section className="relative -mt-6 h-[min(50vh,65vw)] min-h-[240px] sm:min-h-[320px] md:min-h-[360px]">
         <div className="absolute inset-0">
           {backdrop && (
             <Image
@@ -105,14 +105,14 @@ export default async function MoviePage({ params }: PageProps<"/movie/[id]">) {
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_top,#161826_0%,rgba(22,24,38,0.4)_60%,rgba(22,24,38,0.85)_100%)]" />
       </section>
 
-      <div className="mx-auto max-w-5xl px-6 pb-12">
-        <div className="-mt-32 flex flex-col gap-8 sm:flex-row">
-          <div className="relative aspect-2/3 w-40 flex-none overflow-hidden rounded-lg bg-brand-surface shadow-md sm:w-56">
+      <div className="mx-auto max-w-5xl px-4 pb-12 sm:px-6">
+        <div className="-mt-20 flex flex-col gap-8 sm:-mt-28 sm:flex-row md:-mt-32">
+          <div className="relative aspect-2/3 w-32 flex-none overflow-hidden rounded-lg bg-brand-surface shadow-md sm:w-56">
             <PosterImage src={poster} alt={movie.title} sizes="224px" iconSize={40} />
           </div>
 
           <div className="relative flex-1 pt-4">
-            <h1 className="font-heading text-3xl font-medium sm:text-4xl">
+            <h1 className="font-heading text-2xl font-medium sm:text-3xl md:text-4xl">
               {movie.title}
             </h1>
             {movie.tagline && (
