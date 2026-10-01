@@ -24,6 +24,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import PosterImage from "@/components/PosterImage";
+import { RatingWidget } from "@/components/movie/RatingWidget";
+import { getMovieRatingSummary } from "@/lib/ratings/queries";
 
 const TRAILER_LANGUAGE_KEYS: TrailerLanguage[] = [
   "dublado",
@@ -48,11 +50,12 @@ export default async function MoviePage({ params }: PageProps<"/movie/[id]">) {
   const movie = await getMovieDetails(movieId);
   if (!movie) notFound();
 
-  const [videos, credits, similar, cookieStore] = await Promise.all([
+  const [videos, credits, similar, cookieStore, ratingSummary] = await Promise.all([
     getMovieVideos(movieId, movie.originalLanguage),
     getMovieCredits(movieId),
     getSimilarMovies(movieId),
     cookies(),
+    getMovieRatingSummary(movieId),
   ]);
 
   const trailerOptions = getTrailerOptions(videos, movie.originalLanguage);
@@ -134,6 +137,8 @@ export default async function MoviePage({ params }: PageProps<"/movie/[id]">) {
                 </>
               )}
             </div>
+
+            <RatingWidget movieId={movie.id} initialSummary={ratingSummary} />
 
             {directors.length > 0 && (
               <p className="mt-3 text-sm text-brand-text/70">
