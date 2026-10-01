@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { HeaderSearch } from "../HeaderSearch";
+import { UserMenu } from "@/components/auth/UserMenu";
 
 const NAV_LINKS = [
   { href: "/", label: "Início" },
@@ -30,6 +31,7 @@ export default function Header() {
       <div className="flex-1" />
       <div className="flex items-center gap-2 md:gap-4">
         <HeaderSearch />
+        <UserMenu />
       </div>
     </header>
   );
